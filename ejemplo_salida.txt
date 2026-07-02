@@ -1,0 +1,46 @@
+SALIDA DE REFERENCIA
+Programa: suma_vectores_hibrido
+Autor: Pedribel Pion Rijo (24-0429)
+
+Hardware de referencia: CPU 8 hilos lógicos · GPU NVIDIA GeForce RTX 3060
+(arquitectura Ampere, sm_86). Los tiempos exactos dependen del hardware,
+del ancho de banda PCIe y de la carga del sistema en el momento de la
+ejecución; los valores siguientes ilustran el orden de magnitud esperado.
+
+════════════════════════════════════════════════════════════
+  EJECUCIÓN: ./bin/suma_vectores_hibrido
+════════════════════════════════════════════════════════════
+=========================================================
+  Suma hibrida de vectores: OpenMP (CPU) vs CUDA (GPU)
+=========================================================
+Tamano del vector (N):   1048576 elementos
+Hilos CPU disponibles:   8
+Config. GPU:             4096 bloques x 256 hilos/bloque
+
+[FASE 1: CPU / OpenMP]
+  Tiempo de ejecucion:   0.001850 s
+
+[FASE 2: GPU / CUDA]
+  Tiempo total (con transferencias): 0.001430 s
+
+[VERIFICACION]
+  Diferencia maxima:  0.000000e+00
+  Resultado:          CORRECTO
+
+[FASE 3: RENDIMIENTO]
+  Tiempo CPU (OpenMP): 0.001850 s
+  Tiempo GPU (CUDA):   0.001430 s
+  Speedup (CPU/GPU):   1.29x
+=========================================================
+
+NOTA DE INTERPRETACIÓN
+-----------------------
+Con N = 1,048,576 elementos (4 MB por vector), el costo fijo de la
+transferencia Host->Device / Device->Host y del lanzamiento del kernel
+representa una fracción considerable del tiempo total de la fase GPU,
+mientras el cómputo por elemento (una suma) es trivial para miles de
+núcleos CUDA. Este comportamiento memory-bound se analiza en la sección
+6 del informe técnico. Al aumentar N en uno o dos órdenes de magnitud
+(10^7-10^9), el overhead fijo se diluye proporcionalmente y el speedup
+de la GPU crece de forma sostenida, según la proyección de la tabla de
+escalabilidad del mismo informe.
